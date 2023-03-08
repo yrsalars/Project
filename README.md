@@ -1,7 +1,8 @@
 # Project
 As I am not very well known with python I am not sure what is a reasonable project for this course and have provided two options, where I think the first would be more time demanding.
 
-Description:
+DESCRIPTION:
+
 Idea 1
 I work with large datasets of LC-MS data where I am currently using programs provided from the company that makes the machine. The files are containing large information where I would like to put in demands on sorting out the information that I need (finding the right molecular masses).
 For this dataset I would also want to detect matches in this file with smaller datasets, where I can change the specific requirements for matches.
