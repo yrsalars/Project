@@ -9,4 +9,4 @@ BAC_formulas=pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Pyt
 print(BAC_formulas)
 # %%
 #Find monoisotopic mass that matches the measures monoisotopic mass, one column where the different of parent and product is written out
-if BAC_metabolites[:,0]==filewithcompounds[:,0]
+#if BAC_metabolites[:,0]==filewithcompounds[:,0]
