@@ -11,14 +11,18 @@ atomic_masses = {
     "Cl": 34.968853,
 }
 
+def find_molecular_formula(monoisotopic_mass, tolerance=0.1):
 def find_molecular_formula(monoisotopic_mass):
+def find_molecular_formula(monoisotopic_mass, tolerance=0.1):
     """
     Given a monoisotopic mass, returns the molecular formula
     that has the closest possible mass to the given value.
     """
     # Initialize variables
     formula = {}
+    mass_error = float("inf")
     mass_error = monoisotopic_mass
+    mass_error = float("inf")
     max_atoms = 70
     max_H_atoms = 50
     max_C_atoms = 21
@@ -46,14 +50,20 @@ def find_molecular_formula(monoisotopic_mass):
                                         formula = {"C": num_c, "H": num_h, "N": num_n, "O": num_o, "F": num_f, "P": num_p, "S": num_s, "Cl": num_cl}
                                         mass_error = abs(mass - monoisotopic_mass)
                                         mass_out = mass
-                                    print(num_c, num_h, num_n, num_o, num_f, num_p, num_s, num_cl, mass, mass_error)
+                                    
 
     # Return the closest molecular formula
     return formula, mass_out
 
 # Test the function
 mono_mass = 304.29
+tolerance = 0.1
+formula, mass = find_molecular_formula(mono_mass, tolerance)
 formula, mass = find_molecular_formula(mono_mass)
+tolerance = 0.1
+formula, mass = find_molecular_formula(mono_mass, tolerance)
 
+print(f"The molecular formula with a monoisotopic mass closest to {mono_mass}(+/- {tolerance}) is {formula}.")
 print(f"The molecular formula with a monoisotopic mass closest to {mono_mass} is {formula}.")
+print(f"The molecular formula with a monoisotopic mass closest to {mono_mass}(+/- {tolerance}) is {formula}.")
 print(f"with a mass of {mass}")
