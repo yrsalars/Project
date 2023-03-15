@@ -1,58 +1,22 @@
 #%%
-import pandas as pd
-import numpy as np
-from itertools import combinations
-
-# Load data
-measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
-chemical_elements = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
-mm = measured_mass['m/z'].astype(float).tolist()
-
-def calculate_mass(formula):
-    elements = {}
-    for i, row in chemical_elements.iterrows():
-        elements[row['Symbol']] = row['Mass']
-    
-    mass = 0
-    current_element = ''
-    current_count = ''
-    for char in formula:
-        if char.isupper():
-            if current_element != '':
-                if current_count == '':
-                    current_count = '1'
-                mass += elements[current_element] * int(current_count)
-            current_element = char
-            current_count = ''
-        elif char.islower():
-            current_element += char
-        elif char.isdigit():
-            current_count += char
-    
-    if current_element != '':
-        if current_count == '':
-            current_count = '1'
-        mass += elements[current_element] * int(current_count)
-    
-    return mass
-measured_mass='C17H28NO3'
-print(calculate_mass(measured_mass))
-
-def ppm_error(measured_mass, calculated_mass):
-    if measured_mass == 0:
-        return None
-    return abs((measured_mass - calculated_mass) / measured_mass) * 1e6
-print(ppm_error)
-#%%
 # Import the necessary modules
 import pandas as pd
 import numpy as np
 from itertools import combinations
 
 # Load data
-measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
-chemical_elements = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
-mm = measured_mass['m/z'].astype(float).tolist()
+#measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
+#chemical_elements = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
+# Define the dictionary of elements and their atomic masses
+chemical_elements = {
+    "H": {"Symbol": "H", "Mass": 1.007825},
+    "C": {"Symbol": "C", "Mass": 12.0},
+    "N": {"Symbol": "N", "Mass": 14.003074},
+    "O": {"Symbol": "O", "Mass": 15.994915}
+}
+
+#mm = measured_mass['m/z'].astype(float).tolist()
+mm=[304.29]
 
 # Define the function to calculate the ppm error
 def ppm_error(mm, calculated_mass):
@@ -63,94 +27,45 @@ def ppm_error(mm, calculated_mass):
 # Define the function to calculate the possible chemical formulas
 def calc_formulas(mz):
     # Define the list of elements and their atomic masses
-    elements = {}
-    for i, row in chemical_elements.iterrows():
-        elements [row['Symbol']] = row['Mass']
-  
-    mass = 0
-    current_element = ''
-    current_count = ''
-    for char in mz:
-        if char.isupper():
-            if current_element != '':
-                if current_count == '':
-                    current_count = '1'
-                mass += elements[current_element] * int(current_count)
-            current_element = char
-            current_count = ''
-        elif char.islower():
-            current_element += char
-        elif char.isdigit():
-            current_count += char
+    elements = []
+    for symbol, data in chemical_elements.items():
+        elements.append((data['Symbol'], data['Mass']))
     
-    if current_element != '':
-        if current_count == '':
-            current_count = '1'
-        mass += elements[current_element] * int(current_count)
-  
-    # Define the function to calculate the mass of a formula
-    def calc_mass(formula):
-        mass_dict = {}
-        for element, count in formula.items():
-            mass_dict[element]= count * elements[element]
-        return sum(mass_dict.values())
+    # Calculate the possible formulas
+    possible_formulas = []
+    for i in range(len(elements)):
+        for combination in combinations(elements, i+1):
+            formula = ''.join([elem[0] for elem in combination])
+            mass = sum([elem[1] for elem in combination])
+            possible_formulas.append((formula, mass))
 
-    # Create a list of all possible combinations of elements and their counts
-    elements_list = [dict.fromkeys(elements.keys(), 0) for i in range(2, len(elements) + 1)]
-    for i in range(1, len(elements) + 1):
-        for combination in combinations(elements.keys(), i):
-            elements_list.append(dict.fromkeys(combination, 0))
-        for i in range(1, 10):
-            for combination in combinations(elements.keys(), i):
-                elements_list.append(dict.fromkeys(combination, 0))
-
-    # Create a DataFrame to store the possible formulas and their masses
-    formulas_df = pd.DataFrame(columns=['Formula', 'Mass', 'PPM Error'])
-
-    # Define the mass tolerance (in Da) for each element
-    tol = {element: 100 / 1e6 * mass for element, mass in elements.items()}
-
-    #Range for monoisotopic mass calculation and difference in Dalton
-    min_mass = mz - 5 
-    max_mass = mz + 5
-
-    # Iterate through each possible formula and calculate its mass
-    for formula in elements_list:
-        mass = calc_mass(formula)
-        if mass >= min_mass and mass <= max_mass:
-            for element, mass in elements.items():
-                formula[element] = int(np.ceil(mz / mass - tol[element]))
-            if all(count >= 0 for count in formula.values()):
-                mass = calc_mass(formula)
-                formulas_df = formulas_df.append({'Formula': formula, 'Mass': mass}, ignore_index=True)
-
-    # Sort the formulas by their mass and keep only the top three
-    formulas_df = formulas_df.sort_values('Mass').head(3)
-
-    # Convert the formula dictionary to a string representation
-    formulas_df['Formula Str'] = formulas_df['Formula'].apply(lambda x: ''.join([f'{k}{v}' for k,v in x.items() if v > 0]))
-    formulas_df = formulas_df.drop(columns='Formula')
-
-    # Calculate the ppm error for each formula and add it to the DataFrame
-    for i in range(len(formulas_df)):
-        ppm = ppm_error(mz, formulas_df.iloc[i]['Mass'])
-        if ppm is not None:
-            formulas_df.at[i, 'PPM Error'] = ppm
-        else:
-            print('Error: could not calculate ppm error')
-
-    # Return the formulas_df DataFrame
-    return formulas_df
-
-
+    
+    # Filter the possible formulas based on the ppm error
+    ppm_tolerance = 50 # set the ppm tolerance here
+    filtered_formulas = []
+    for formula, mass in possible_formulas:
+        error = ppm_error(mz, mass)
+        if error is not None and error <= ppm_tolerance:
+            filtered_formulas.append((formula, mass, error))
+    
+   # Convert the list of tuples to a DataFrame
+    columns = ['Formula', 'Mass', 'PPM Error']
+    df = pd.DataFrame(filtered_formulas, columns=columns)
+    
+    # Sort the filtered formulas by increasing ppm error
+    df = df.sort_values(by='PPM Error')
+    
+    return df
+ 
 for mass in mm:
     formulas = calc_formulas(mass)
     if formulas is not None:
         print('Measured Mass:', mass)
-        print(formulas[['Formula Str', 'Mass', 'PPM Error']].to_string(index=False))
+        print(formulas.to_string(index=False, columns=['Formula', 'Mass', 'PPM Error']))
         print()
     else:
         print('Error: could not calculate formulas for measured mass', mass)
+
 
 
        

@@ -1,7 +1,3 @@
-#%%
-import pandas as pd
-Mono_masses=pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
-print(Mono_masses)
 
 # %%
 # Import the necessary modules
@@ -10,10 +6,10 @@ import numpy as np
 from itertools import combinations
 from scipy.optimize import minimize_scalar
 
-measured_mass=pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
-chemical_elements=pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
-mm=measured_mass['m/z'].tolist()
-
+#measured_mass=pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
+#chemical_elements=pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
+#mm=measured_mass['m/z'].tolist()
+mm=304
     # Define the function to calculate the ppm error
 def ppm_error(mm, calculated_mass):
     return abs((mm- calculated_mass) / mm) * 1e6
