@@ -2,14 +2,18 @@
 # Import the necessary modules
 import pandas as pd
 import numpy as np
+import itertools
 from itertools import combinations
 from itertools import combinations_with_replacement
 from collections import Counter
 
 # Load data
-#measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
+measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
 #chemical_elements = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
 # Define the dictionary of elements and their atomic masses
+measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
+print(measures_mass)
+#%%
 chemical_elements = {
     "H": {"Symbol": "H", "Mass": 1.007825},
     "C": {"Symbol": "C", "Mass": 12.0},
@@ -18,7 +22,7 @@ chemical_elements = {
 }
 
 #mm = measured_mass['m/z'].astype(float).tolist()
-mm=[100]
+mm=[304.29]
 
 # Define the function to calculate the ppm error
 def ppm_error(mm, calculated_mass):
@@ -38,21 +42,29 @@ def calc_formulas(mz):
     max_counts = {'H': 40, 'C': 25, 'N': 2, 'O': 5}
 
     # Calculate the possible formulas
+    
+    # Calculate the possible formulas
     possible_formulas = []
-    for i in range(len(elements)):
-        for combination in combinations_with_replacement(elements, i+70):
-            counts = Counter([elem[0] for elem in combination])
+    for i in range(1, len(elements) + 1):
+        for combination in itertools.chain.from_iterable(
+            [combinations(elements, r) for r in range(1, i + 1)]):
+            counts = Counter(combination)
             # Check if the counts of each element are within the limits
-            if all(counts.get(elem, 0) >= min_counts.get(elem, 0) and counts.get(elem, 0) <= max_counts.get(elem, float('inf')) for elem in counts.keys()):
-                formula = ''.join([elem[0] for elem in combination])
+            if all(
+                counts.get(elem, 0) >= min_counts.get(elem, 0)
+                and counts.get(elem, 0) <= max_counts.get(elem, float("inf"))
+                for elem in counts.keys()):
+                formula = "".join([elem[0] for elem in combination])
                 mass = sum([elem[1] for elem in combination])
                 if abs(mass - mz) < 0.1:
                     possible_formulas.append((formula, mass))
+
+
+
     
     # Return the list of possible formulas, sorted by mass
     if possible_formulas:
         return sorted(possible_formulas, key=lambda x: x[1])
-    print("Possible formulas:", possible_formulas)
    
     # Filter the possible formulas based on the ppm error
     ppm_tolerance = 50 # set the ppm tolerance here

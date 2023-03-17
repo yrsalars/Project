@@ -7,7 +7,8 @@ from itertools import combinations
 measured_mass = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\BAC_compounds.xlsx', sheet_name='Sheet1',)
 chemical_elements = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\Courses\Python\Monoisotopic_masses.xlsx', sheet_name='Most occuring')
 mm = measured_mass['m/z'].astype(float).tolist()
-
+print(measured_mass)
+#%%
 def calculate_mass(formula):
     elements = {}
     for i, row in chemical_elements.iterrows():
