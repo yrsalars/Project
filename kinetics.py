@@ -5,7 +5,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 # Load data from CSV file
-data = pd.read_csv('data.csv', header=None, names=['x', 'y', 'error'])
+data = pd.read_excel(r'C:\Users\au708090\OneDrive\Dokument\PhD\BAC-12\Excel\Kinetics.xlsx', sheet_name='Sheet4', header=None, names=['x', 'y', 'error'])
+
 
 # Define the function to fit
 def degradation_curve(x, a, b):
