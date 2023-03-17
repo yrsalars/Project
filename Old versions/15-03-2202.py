@@ -12,16 +12,12 @@ atomic_masses = {
 }
 
 def find_molecular_formula(monoisotopic_mass, tolerance=0.1):
-def find_molecular_formula(monoisotopic_mass):
-def find_molecular_formula(monoisotopic_mass, tolerance=0.1):
     """
     Given a monoisotopic mass, returns the molecular formula
     that has the closest possible mass to the given value.
     """
     # Initialize variables
     formula = {}
-    mass_error = float("inf")
-    mass_error = monoisotopic_mass
     mass_error = float("inf")
     max_atoms = 70
     max_H_atoms = 50
@@ -59,11 +55,6 @@ def find_molecular_formula(monoisotopic_mass, tolerance=0.1):
 mono_mass = 304.29
 tolerance = 0.1
 formula, mass = find_molecular_formula(mono_mass, tolerance)
-formula, mass = find_molecular_formula(mono_mass)
-tolerance = 0.1
-formula, mass = find_molecular_formula(mono_mass, tolerance)
 
-print(f"The molecular formula with a monoisotopic mass closest to {mono_mass}(+/- {tolerance}) is {formula}.")
-print(f"The molecular formula with a monoisotopic mass closest to {mono_mass} is {formula}.")
-print(f"The molecular formula with a monoisotopic mass closest to {mono_mass}(+/- {tolerance}) is {formula}.")
+print(f"The molecular formula with a monoisotopic mass closest to {mono_mass}(+/- tolerance) is {formula}.")
 print(f"with a mass of {mass}")
