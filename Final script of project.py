@@ -1,4 +1,3 @@
-#%%
 import pandas as pd
 from itertools import product
 from prettytable import PrettyTable
@@ -37,7 +36,3 @@ for mz in df['m/z']:
         print(table)
 
 
-
-
-       
-# %%
